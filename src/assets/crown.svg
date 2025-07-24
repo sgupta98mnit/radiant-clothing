@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="50px" height="39px" viewBox="0 0 50 39" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Radiant Logo</title>
+    <desc>Modern geometric logo for radiant clothing store</desc>
+    <g id="radiant-logo" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <!-- Main diamond shape -->
+        <polygon id="main-diamond" fill="#808282" points="25 2 45 15 25 28 5 15"></polygon>
+        
+        <!-- Inner diamond facets for depth -->
+        <polygon id="top-facet" fill="#5E6363" points="25 2 35 10 25 15 15 10"></polygon>
+        <polygon id="bottom-facet" fill-opacity="0.6" fill="#101A1A" points="25 15 35 20 25 28 15 20"></polygon>
+        
+        <!-- Side accent elements -->
+        <circle id="left-accent" fill="#5E6363" cx="8" cy="15" r="3"></circle>
+        <circle id="right-accent" fill="#5E6363" cx="42" cy="15" r="3"></circle>
+        
+        <!-- Bottom geometric elements -->
+        <polygon id="left-triangle" fill="#808282" points="10 25 20 35 5 35"></polygon>
+        <polygon id="right-triangle" fill="#808282" points="40 25 45 35 30 35"></polygon>
+        
+        <!-- Central base -->
+        <rect id="center-base" fill="#5E6363" x="18" y="32" width="14" height="5" rx="1"></rect>
+        
+        <!-- Subtle highlight lines -->
+        <line id="highlight-1" x1="15" y1="10" x2="35" y2="10" stroke="#808282" stroke-width="0.5" opacity="0.7"></line>
+        <line id="highlight-2" x1="15" y1="20" x2="35" y2="20" stroke="#5E6363" stroke-width="0.5" opacity="0.5"></line>
+    </g>
+</svg>
