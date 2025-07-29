@@ -5,10 +5,13 @@ import './index.scss';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+// Use environment variable for basename, with fallback
+const basename = process.env.REACT_APP_BASENAME || '/';
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename={basename}>
       <App />
     </BrowserRouter>
   </React.StrictMode>
