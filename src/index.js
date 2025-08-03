@@ -7,6 +7,7 @@ import { UserProvider } from "./contexts/user.context";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { ProductProvider } from "./contexts/products.context";
+import { CartContext } from "./contexts/cart.context";
 
 // Use environment variable for basename, with fallback
 const basename = process.env.REACT_APP_BASENAME || "/";
@@ -15,11 +16,13 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <BrowserRouter basename={basename}>
-      <UserProvider>
-        <ProductProvider>
-          <App />
-        </ProductProvider>
-      </UserProvider>
+      <CartContext>
+        <UserProvider>
+          <ProductProvider>
+            <App />
+          </ProductProvider>
+        </UserProvider>
+      </CartContext>
     </BrowserRouter>
   </React.StrictMode>
 );
