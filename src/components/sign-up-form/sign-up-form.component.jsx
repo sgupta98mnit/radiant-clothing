@@ -5,8 +5,8 @@ import {
   createAuthUserWithEmailAndPassword,
   createUserDocumentFromAuth,
 } from "../../utils/firebase/firebase.utils";
-import { Form } from "react-router-dom";
 
+import Button from "../button/button.component";
 const defaultFormFields = {
   displayName: "",
   email: "",
@@ -93,7 +93,7 @@ const SignUpForm = () => {
           type="password"
         />
 
-        <button type="submit">Sign Up</button>
+        <Button type="submit">Sign Up</Button>
       </form>
     </div>
   );
