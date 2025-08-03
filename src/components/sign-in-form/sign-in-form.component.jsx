@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 
 import FormInput from "../form-input/form-input.component";
 import Button from "../button/button.component";
+
+import { UserContext } from "../../contexts/user.context";
 
 import {
   signInAuthUserWithEmailAndPassword,
@@ -20,6 +22,8 @@ const SignInForm = () => {
   const [formFields, setFormFields] = useState(defaultFormFields);
   const { email, password } = formFields;
 
+  const { setCurrentUser } = useContext(UserContext);
+
   const resetFormFields = () => {
     setFormFields(defaultFormFields);
   };
@@ -28,8 +32,8 @@ const SignInForm = () => {
     try {
       console.log("Google sign in started");
       const { user } = await signInWithGooglePopup();
-      console.log("Google sign in successful:", user);
       await createUserDocumentFromAuth(user);
+      setCurrentUser(user);
     } catch (error) {
       console.log("Google sign in failed", error);
       alert("Google sign in failed. Please try again.");
@@ -50,6 +54,7 @@ const SignInForm = () => {
         email,
         password
       );
+      setCurrentUser(user);
       resetFormFields();
     } catch (error) {
       console.log("user sign in failed", error);
