@@ -6,6 +6,7 @@ import "./index.scss";
 import { UserProvider } from "./contexts/user.context";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
+import { ProductProvider } from "./contexts/products.context";
 
 // Use environment variable for basename, with fallback
 const basename = process.env.REACT_APP_BASENAME || "/";
@@ -15,7 +16,9 @@ root.render(
   <React.StrictMode>
     <BrowserRouter basename={basename}>
       <UserProvider>
-        <App />
+        <ProductProvider>
+          <App />
+        </ProductProvider>
       </UserProvider>
     </BrowserRouter>
   </React.StrictMode>
