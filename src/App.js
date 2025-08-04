@@ -5,19 +5,22 @@ import Authentication from './routes/authentication/authentication.component';
 import Shop from './routes/shop/shop.component';
 import { UserProvider } from './contexts/user.context';
 import { CartProvider } from './contexts/cart.context';
+import { ProductsProvider } from './contexts/products.context';
 
 const App = () => {
   return (
     <UserProvider>
-      <CartProvider>
-        <Routes >
-          <Route path='/' element={<Navigation />} >
-            <Route index element={<Home />} />
-            <Route path='shop' element={<Shop />} />
-            <Route path='auth' element={<Authentication />}/>
-          </Route>
-        </Routes>
-      </CartProvider>
+      <ProductsProvider>
+        <CartProvider>
+          <Routes >
+            <Route path='/' element={<Navigation />} >
+              <Route index element={<Home />} />
+              <Route path='shop' element={<Shop />} />
+              <Route path='auth' element={<Authentication />}/>
+            </Route>
+          </Routes>
+        </CartProvider>
+      </ProductsProvider>
     </UserProvider>
   );
 }
