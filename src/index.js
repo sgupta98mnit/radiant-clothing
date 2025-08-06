@@ -6,7 +6,7 @@ import "./index.scss";
 import { UserProvider } from "./contexts/user.context";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import { ProductsProvider } from "./contexts/products.context";
+import { CategoriesProvider } from "./contexts/categories.context";
 import { CartProvider } from "./contexts/cart.context";
 
 // Use environment variable for basename, with fallback
@@ -18,9 +18,9 @@ root.render(
     <BrowserRouter basename={basename}>
       <CartProvider>
         <UserProvider>
-          <ProductsProvider>
+          <CategoriesProvider>
             <App />
-          </ProductsProvider>
+          </CategoriesProvider>
         </UserProvider>
       </CartProvider>
     </BrowserRouter>

@@ -6,12 +6,12 @@ import Shop from './routes/shop/shop.component';
 import Checkout from './routes/checkout/checkout.component';
 import { UserProvider } from './contexts/user.context';
 import { CartProvider } from './contexts/cart.context';
-import { ProductsProvider } from './contexts/products.context';
+import { CategoriesProvider } from './contexts/categories.context';
 
 const App = () => {
   return (
     <UserProvider>
-      <ProductsProvider>
+      <CategoriesProvider>
         <CartProvider>
           <Routes >
             <Route path='/' element={<Navigation />} >
@@ -22,7 +22,7 @@ const App = () => {
             </Route>
           </Routes>
         </CartProvider>
-      </ProductsProvider>
+      </CategoriesProvider>
     </UserProvider>
   );
 }
