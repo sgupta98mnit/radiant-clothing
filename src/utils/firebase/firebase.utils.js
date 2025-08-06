@@ -1,4 +1,5 @@
 import { initializeApp } from "firebase/app";
+
 import {
   getAuth,
   signInWithRedirect,
@@ -9,26 +10,48 @@ import {
   signInWithEmailAndPassword,
   onAuthStateChanged,
 } from "firebase/auth";
-import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
+
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+  collection,
+  writeBatch,
+} from "firebase/firestore";
+
+export const addCollectionAndDocuments = async (
+  collectionKey,
+  objectsToAdd
+) => {
+  const collectionRef = collection(db, collectionKey);
+
+  const batch = writeBatch(db);
+
+  objectsToAdd.forEach((object) => {
+    const docRef = doc(collectionRef, object.title.toLowerCase());
+    batch.set(docRef, object);
+  });
+
+  await batch.commit();
+  console.log("done");
+};
 
 const firebaseConfig = {
+  apiKey: "AIzaSyBuLVV_Aae-wCudAGPEbPF6yOhlQA3u9Ec",
 
-    apiKey: "AIzaSyBuLVV_Aae-wCudAGPEbPF6yOhlQA3u9Ec",
-  
-    authDomain: "radiant-clothing-db-v1.firebaseapp.com",
-  
-    projectId: "radiant-clothing-db-v1",
-  
-    storageBucket: "radiant-clothing-db-v1.firebasestorage.app",
-  
-    messagingSenderId: "1011019959980",
-  
-    appId: "1:1011019959980:web:69922ad4fe9a8e6fe1d909",
-  
-    measurementId: "G-WC6MGCEHE5"
-  
-  };
-  
+  authDomain: "radiant-clothing-db-v1.firebaseapp.com",
+
+  projectId: "radiant-clothing-db-v1",
+
+  storageBucket: "radiant-clothing-db-v1.firebasestorage.app",
+
+  messagingSenderId: "1011019959980",
+
+  appId: "1:1011019959980:web:69922ad4fe9a8e6fe1d909",
+
+  measurementId: "G-WC6MGCEHE5",
+};
 
 initializeApp(firebaseConfig);
 
