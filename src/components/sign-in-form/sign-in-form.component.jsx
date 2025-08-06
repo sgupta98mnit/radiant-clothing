@@ -77,7 +77,7 @@ const SignInForm = () => {
     <div className="sign-in-container">
       <h2>Already have an account?</h2>
       <span>Sign in with your email and password</span>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} autoComplete="off">
         <FormInput
           label="Email"
           type="email"
