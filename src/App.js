@@ -8,6 +8,7 @@ import { UserProvider } from "./contexts/user.context";
 import { CartProvider } from "./contexts/cart.context";
 import { CategoriesProvider } from "./contexts/categories.context";
 
+
 const App = () => {
   return (
     <UserProvider>
