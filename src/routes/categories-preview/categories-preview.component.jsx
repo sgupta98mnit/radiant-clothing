@@ -12,7 +12,7 @@ const CategoriesPreview = () => {
       {Object.keys(categoriesMap).map((title) => {
         const products = categoriesMap[title];
         return (
-            <CategoryPreview title={title} products={products} />
+            <CategoryPreview title={title} products={products}/>
         );
       })}
     </Fragment>
