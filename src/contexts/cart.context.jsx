@@ -36,6 +36,56 @@ const clearCartItems = (cartItems, cartItemToClear) => {
   return cartItems.filter((cartItem) => cartItem.id !== cartItemToClear.id);
 };
 
+const INITIAL_STATE = {
+  isCartOpen: false,
+  cartItems: [],
+  cartItemCount: 0,
+  cartTotal: 0,
+};
+
+const cartReducer = (state, action) => {
+  const { type, payload } = action;
+
+  switch (type) {
+    case "SET_CART_ITEMS":
+      return {
+        ...state,
+        ...payload,
+      };
+    case "TOGGLE_CART_HIDDEN":
+      return {
+        ...state,
+        isCartOpen: !state.isCartOpen,
+      };
+    default:
+      return state;
+  }
+};
+
+const updateCartItemsReducer = (state, action) => {
+  const { type, payload } = action;
+
+  switch (type) {
+    case "ADD_ITEM_TO_CART":
+      return {
+        ...state,
+        cartItems: addCartItem(state.cartItems, payload),
+      };
+    case "REMOVE_ITEM_FROM_CART":
+      return {
+        ...state,
+        cartItems: removeCartItems(state.cartItems, payload),
+      };
+    case "CLEAR_ITEM_FROM_CART":
+      return {
+        ...state,
+        cartItems: clearCartItems(state.cartItems, payload),
+      };
+    default:
+      return state;
+  }
+};
+
 export const CartContext = createContext({
   isCartOpen: false,
   setIsCartOpen: () => {},
