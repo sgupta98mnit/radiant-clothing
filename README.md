@@ -1,80 +1,85 @@
-# Getting Started with Create React App
+# VPS Deployment Behind Caddy (Path-Based Routing)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This repo is deployed on a single VPS alongside other projects using Caddy as the front door. Caddy terminates TLS (HTTPS), listens on ports 80/443, and reverse proxies to Docker containers. Only Caddy should expose ports 80/443 to the host.
 
-## Available Scripts
+Routing model:
+- `/` -> `portfolio`
+- `/projects/<name>` -> each project container (example: `radiant-clothing` at `/projects/radiant-clothing`)
 
-In the project directory, you can run:
+**Overview**
+Caddy is a modern web server and reverse proxy with automatic HTTPS. We use it with Docker to centralize TLS and route multiple apps by path. Caddy runs on a shared Docker network and proxies to internal container names (Docker DNS). Only Caddy publishes host ports 80/443; app containers stay internal.
 
-### `Running with Docker`
+**Common Errors & Fixes**
+Issue we hit:
+- Browser error: “bundle.js loaded with MIME type text/html” and “expected expression, got '<'”
+- `curl` showed `bundle.js` returning HTML (`index.html`)
+- Caddy returned `502` on `/projects/radiant-clothing`
+- Inside caddy container: `wget http://radiant-clothing:3000` failed with `bad address`
 
-To run this project with Docker, run the following command:
+Root cause:
+- Caddy and `radiant-clothing` were on different Docker networks, so Docker DNS could not resolve the container name. Container-name DNS only works when both containers share a network. This is the standard pattern for Docker reverse proxies: upstreams must be reachable on a shared network, otherwise Caddy returns `502`.
 
+Fix:
+- Connect the app container to the same network as Caddy:
 ```
-docker-compose up
+docker network connect web radiant-clothing
+```
+- Verify from inside Caddy:
+```
+docker exec -it caddy sh -lc 'wget -qSO- http://radiant-clothing:3000/ 2>&1 | head -n 20'
 ```
 
-This will build the Docker image (if it's not already built) and start the container. The application will be available at [http://localhost:3000](http://localhost:3000).
+**Deployment Steps**
+1. Create the shared network (idempotent):
+```
+docker network create web || true
+```
+2. Run/attach Caddy on the `web` network (do this once):
+```
+# If Caddy is already running, just connect it:
+docker network connect web caddy || true
+```
+3. For every app container, ensure it is on `web` (compose or manual):
+```
+# After the container is up:
+docker network connect web <container>
+```
+4. Do not publish app ports to the host. Only Caddy publishes 80/443. Avoid conflicts like `-p 3000:3000` if another app already uses 3000. Prefer `expose:` in compose so ports are internal only.
 
-### `npm start`
+Verification commands:
+```
+docker ps
+```
+```
+docker inspect <container> --format '{{range $k,$v := .NetworkSettings.Networks}}{{$k}} {{end}}'
+```
+```
+docker exec -it caddy sh -lc 'wget -qSO- http://<service>:<port>/ 2>&1 | head -n 20'
+```
+```
+curl -vkI https://sumit-gupta.cloud/projects/<name>/
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+**Caddyfile Template**
+The project-specific block must appear before the default `handle`.
+```
+sumit-gupta.cloud, www.sumit-gupta.cloud {
+  encode zstd gzip
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+  redir /projects/radiant-clothing /projects/radiant-clothing/ 308
+  handle_path /projects/radiant-clothing/* {
+    reverse_proxy radiant-clothing:3000
+  }
 
-### `npm test`
+  handle {
+    reverse_proxy portfolio:3000
+  }
+}
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+**Project Checklist**
+- Put the project container on the shared `web` network with Caddy.
+- Don’t publish app ports to the host; only Caddy publishes 80/443.
+- Add a Caddy route block for `/projects/<name>` (before the default `handle`).
+- If the React app is under a subpath, set its base path/homepage so static asset URLs resolve correctly.
+- Validate routing: ensure `/static/*` requests return JS/CSS content-types, not HTML.
